@@ -1,0 +1,21 @@
+.tile {
+    height: 80px;
+    width: 80px;
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    font-size: 30px;
+    text-align: center;
+}
+
+.image {
+    height: 80px;
+    width: 80px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 80px 80px 80px;
+    row-gap: 5px;
+    column-gap: 5px;
+}
