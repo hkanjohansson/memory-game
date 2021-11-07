@@ -7,13 +7,13 @@ function Image() {
   )
 }
 
-function Tile({flippedNumber }) {
+function Tile({ flippedNumber }) {
   const image = <Image />
   const [tileValue, setTileValue] = useState(image)
   const [flipped, setFlipped] = useState(false)
 
   const handleClick = () => {
-    if (flipped === false) {
+    if (!flipped) {
       setTileValue(flippedNumber)
       setFlipped(true)
     } else {
