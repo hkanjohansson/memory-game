@@ -2,68 +2,71 @@ import React, { useState, useEffect, useContext } from 'react'
 import './tile.css'
 import { MemoryContext } from '../index'
 
-/*
-Create global states for tile1_flipped and tile2_flipped
-
-Check id of tile flipped and set flipped
-*/
-
-
 function Image() {
   return (
     <img className='image' src={'./logo192.png'} />
   )
 }
 
-function Tile({ id, flippedNumber }) {
+export function Tile({ id, flippedNumber }) {
+  // Should these two be put in a context???
   const image = <Image />
   const [tileValue, setTileValue] = useState(image)
+  /////////////////////////////////////////////////////
+  // Should everything concerning flip events be put in the Memory component? And tile is just the object?
   const [flipped, setFlipped] = useState(false)
-
-  /*
-    #######
-    Ska jag konsumera context här? Och sen i Memory?
-    #######
-  */
-  const [memoryState, setMemoryState] = useState(useContext(MemoryContext))
+  const contextValues = useContext(MemoryContext)
 
   const handleClick = () => {
-    if (!flipped) {
+    let tempBoard = [...contextValues.board]
+    console.log(tempBoard)
+    if (!flipped) { // TODO : Change to board[id]
+      tempBoard[id] = true
       setTileValue(flippedNumber)
       setFlipped(true)
-      /*
-      ##############
-        Denna sätter jag för att se om jag får en reaktion i useEffect i Memory-komponenten, men 
-        det funkar inte än.
-      ##############
-      */
-      setMemoryState({
-        flippedCount: 1, // ##### Här vill jag öka flippedCount och sen kolla i Memory om det är lika med antalet brickor, jämföra om två nya är flippade etc. 
-        flippedTiles: { first: id, second: null }}) 
+      contextValues.setFlippedCounter(prev => prev + 1)
+      contextValues.setBoard([...tempBoard])
     } else {
       setTileValue(image)
       setFlipped(false)
-      setMemoryState({
-        flippedCount: 1,
-        flippedTiles: { first: null, second: null }}) 
+      contextValues.setFlippedCounter(prev => prev - 1)
+    }
+
+    if (contextValues.flippedCounter % 2 === 0) {
+      contextValues.setTilesFlipped(prev => ({ ...prev, first: id }))
+    } else if (contextValues.flippedCounter % 2 === 1) {
+      contextValues.setTilesFlipped(prev => ({ ...prev, second: id }))
     }
   }
 
-  //console.log(memoryState)
-
+  console.log(`Hej hej: ${contextValues.board}`)
   return (
     <div className='tile' onClick={handleClick}>{tileValue}</div>
   )
 }
 
-function Memory() {
+export function Memory() {
   const [flippedNumber, setFlippedNumber] = useState([1, 2, 3, 4, 5, 6])
-  const [memoryState, setMemoryState] = useState(useContext(MemoryContext))
+  const contextValues = useContext(MemoryContext)
 
+  /*
+    Handles game logic here
+
+    
+  */
   useEffect(() => {
-    //setFlippedCount(prev => prev + 1)
-    console.log(`Hej hej från useEffect ${memoryState}`)
-  }, [memoryState.flippedCount])
+    console.log(contextValues.flippedCounter)
+    console.log(contextValues.tilesFlipped)
+
+    /*
+      Check if flippedCounter mod 2 equals to 0,
+
+      Compare tiles:
+        if equal, then keep flipped
+        else, flip back and reduce counter 
+    */
+
+  }, [contextValues.flippedCounter])
 
   return (
     <div className='grid-container'>
@@ -82,9 +85,6 @@ function Memory() {
       <Tile id={9} flippedNumber={flippedNumber[4]} />
       <Tile id={10} flippedNumber={flippedNumber[5]} />
       <Tile id={11} flippedNumber={flippedNumber[5]} />
-      <div className={'score-board'}>{memoryState.flippedCount}</div>
     </div>
   )
 }
-
-export default Memory

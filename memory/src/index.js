@@ -1,19 +1,32 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './components/tile.css'
-import Memory from './components/memory'
+import { Memory, Tile } from './components/memory'
+import { useState } from 'react/cjs/react.development'
 
 export const MemoryContext = React.createContext()
 
 function Main() {
+  const [board, setBoard] = useState([false, false, false, false, false, false,
+  false, false, false, false, false, false])
+
+  const [tilesFlipped, setTilesFlipped] = useState({
+    first: null,
+    second: null
+  })
+  const [flippedCounter, setFlippedCounter] = useState(0)
 
   const globalStates = {
-    flippedCount: 0,
-    flippedTiles: { first: null, second: null }
+    board: board,
+    setBoard: setBoard,
+    tilesFlipped: tilesFlipped,
+    setTilesFlipped: setTilesFlipped,
+    flippedCounter: flippedCounter,
+    setFlippedCounter: setFlippedCounter
   }
 
   return (
-    <MemoryContext.Provider value={globalStates} >
+    <MemoryContext.Provider value={globalStates}>
       <Memory />
     </MemoryContext.Provider>
   )
