@@ -8,7 +8,7 @@ function Image() {
   )
 }
 
-export function Tile({ id, flippedNumber }) {
+export function Tile({ id, flippedNumber, flipable }) {
   // Should these two be put in a context???
   const image = <Image />
   const [tileValue, setTileValue] = useState(image)
@@ -16,10 +16,9 @@ export function Tile({ id, flippedNumber }) {
   // Should everything concerning flip events be put in the Memory component? And tile is just the object?
   const contextValues = useContext(MemoryContext)
   let tempBoard = [...contextValues.board]
-
-  const handleClick = () => {  
-    console.log(tempBoard)
-    if (!tempBoard[id]) { // TODO : Change to board[id]
+  
+  const handleClick = () => {
+    if (!tempBoard[id] && flipable) {
       tempBoard[id] = true
       setTileValue(flippedNumber)
       contextValues.setFlippedCounter(prev => prev + 1)
@@ -40,7 +39,7 @@ export function Tile({ id, flippedNumber }) {
   }
 
   return (
-    <div className='tile' onClick={handleClick}>{tileValue}</div>
+    <button className='tile' onClick={handleClick}>{tileValue}</button>
   )
 }
 
@@ -48,6 +47,8 @@ export function Memory() {
   const [flippedNumber, setFlippedNumber] = useState([1, 2, 3, 4, 5, 6])
   const contextValues = useContext(MemoryContext)
 
+  const flipable = [...contextValues.flipable]
+  console.log(`Flipable: ${flipable}`)
   /*
     Handles game logic here    
   */
@@ -64,13 +65,19 @@ export function Memory() {
     */
     if (contextValues.flippedCounter % 2 === 0 && contextValues.flippedCounter > 0) {
       if (contextValues.tilesFlipped.first !== contextValues.tilesFlipped.second) {
-        contextValues.setTilesFlipped({first: null, second: null})
+        contextValues.setTilesFlipped({ first: null, second: null })
         contextValues.setFlippedCounter(prev => prev - 2)
+
         // When not matching, flip back in the board state
+        // Set a timer that after ~1s flip back the tiles
+
       } else {
+        // How to get the id of the tiles flipped from here? Does the context need to be changed?
         console.log('You got a match')
-        contextValues.setTilesFlipped({first: null, second: null})
+        contextValues.setTilesFlipped({ first: null, second: null })
+        contextValues.setFlipable(prev => [...prev, ])
         // When the tiles are matched, make sure the tiles cannot be flipped back
+        // 
       }
     }
 
@@ -82,21 +89,21 @@ export function Memory() {
 
   return (
     <div className='grid-container'>
-      <Tile id={0} flippedNumber={1} />
-      <Tile id={1} flippedNumber={1} />
-      <Tile id={2} flippedNumber={2} />
+      <Tile id={0} flippedNumber={flippedNumber[0]} flipable={flipable[0]} />
+      <Tile id={1} flippedNumber={flippedNumber[0]} flipable={flipable[1]} />
+      <Tile id={2} flippedNumber={flippedNumber[1]} flipable={flipable[2]} />
 
-      <Tile id={3} flippedNumber={2} />
-      <Tile id={4} flippedNumber={3} />
-      <Tile id={5} flippedNumber={3} />
+      <Tile id={3} flippedNumber={flippedNumber[1]} flipable={flipable[3]} />
+      <Tile id={4} flippedNumber={flippedNumber[2]} flipable={flipable[4]} />
+      <Tile id={5} flippedNumber={flippedNumber[2]} flipable={flipable[5]} />
 
-      <Tile id={6} flippedNumber={4} />
-      <Tile id={7} flippedNumber={4} />
-      <Tile id={8} flippedNumber={5} />
+      <Tile id={6} flippedNumber={flippedNumber[3]} flipable={flipable[6]} />
+      <Tile id={7} flippedNumber={flippedNumber[3]} flipable={flipable[7]} />
+      <Tile id={8} flippedNumber={flippedNumber[4]} flipable={flipable[8]} />
 
-      <Tile id={9} flippedNumber={5} />
-      <Tile id={10} flippedNumber={6} />
-      <Tile id={11} flippedNumber={6} />
+      <Tile id={9} flippedNumber={flippedNumber[4]} flipable={flipable[9]} />
+      <Tile id={10} flippedNumber={flippedNumber[5]} flipable={flipable[10]} />
+      <Tile id={11} flippedNumber={flippedNumber[5]} flipable={flipable[11]} />
     </div>
   )
 }
