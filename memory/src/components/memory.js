@@ -32,14 +32,15 @@ export function Tile({ id, flippedNumber, flipable }) {
 
     // Check which of the tiles to be set
     if (contextValues.flippedCounter % 2 === 0) {
-      contextValues.setTilesFlipped(prev => ({ ...prev, first: flippedNumber }))
+      contextValues.setTilesFlipped(prev => ({ ...prev, first: {flippedNumber, id} }))
     } else if (contextValues.flippedCounter % 2 === 1) {
-      contextValues.setTilesFlipped(prev => ({ ...prev, second: flippedNumber }))
+      contextValues.setTilesFlipped(prev => ({ ...prev, second: {flippedNumber, id} }))
     }
   }
 
+  console.log(`Flipable in tile: ${flipable}`)
   return (
-    <button className='tile' onClick={handleClick}>{tileValue}</button>
+    <button className='tile' onClick={handleClick} disabled={!flipable}>{tileValue}</button> // TODO: Set disabled property when matchced
   )
 }
 
@@ -64,20 +65,23 @@ export function Memory() {
         else, flip back and reduce counter 
     */
     if (contextValues.flippedCounter % 2 === 0 && contextValues.flippedCounter > 0) {
-      if (contextValues.tilesFlipped.first !== contextValues.tilesFlipped.second) {
+      if (contextValues.tilesFlipped.first.flippedNumber !== contextValues.tilesFlipped.second.flippedNumber) {
         contextValues.setTilesFlipped({ first: null, second: null })
         contextValues.setFlippedCounter(prev => prev - 2)
-
+        
+        // TODO: set timer and flip tiles back
+        //
+        //
         // When not matching, flip back in the board state
         // Set a timer that after ~1s flip back the tiles
 
       } else {
-        // How to get the id of the tiles flipped from here? Does the context need to be changed?
         console.log('You got a match')
+        flipable[contextValues.tilesFlipped.first.id] = false
+        flipable[contextValues.tilesFlipped.second.id] = false
         contextValues.setTilesFlipped({ first: null, second: null })
-        contextValues.setFlipable(prev => [...prev, ])
-        // When the tiles are matched, make sure the tiles cannot be flipped back
-        // 
+        contextValues.setFlipable([...flipable])
+        console.log(contextValues.flipable) 
       }
     }
 
